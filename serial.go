@@ -12,13 +12,13 @@ import (
 type I2C struct {
 	dev  *i2c.Dev
 	bus  i2c.BusCloser
-	addr byte
+	addr uint16
 }
 
 // NewI2C returns a new I2C interface at the specified bus and address.
 // If `bus` is set to "", the first available bus is used. The address must
 // always be specified.
-func NewI2C(bus string, addr byte) (*I2C, error) {
+func NewI2C(bus string, addr uint16) (*I2C, error) {
 	if _, err := host.Init(); err != nil {
 		return nil, fmt.Errorf("serial: could not initialize host: %w", err)
 	}
@@ -74,4 +74,9 @@ func (i *I2C) Write(reg, data byte) error {
 	}
 
 	return nil
+}
+
+// Close closes the bus used by I2C.
+func (i *I2C) Close() {
+	i.bus.Close()
 }
