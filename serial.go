@@ -62,15 +62,15 @@ func (i *I2C) ReadBytes(reg byte, n int) ([]byte, error) {
 	return b, nil
 }
 
-// Write writes a byte to a register.
-func (i *I2C) Write(reg, data byte) error {
-	n, err := i.dev.Write([]byte{reg, data})
+// Write writes a byte or bytes to a register.
+func (i *I2C) Write(reg byte, data ...byte) error {
+	n, err := i.dev.Write(append([]byte{reg}, data...))
 	if err != nil {
 		return fmt.Errorf("serial: could not write %x to register %x at address %x: %w", data, reg, i.addr, err)
 	}
 	n-- // remove register write
-	if n != 1 {
-		return fmt.Errorf("serial: wrong number of bytes written: want %d, got %d", 1, n)
+	if n != len(data) {
+		return fmt.Errorf("serial: wrong number of bytes written: want %d, got %d", len(data), n)
 	}
 
 	return nil
